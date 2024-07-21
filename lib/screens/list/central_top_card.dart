@@ -45,7 +45,7 @@ class CentralTopCard extends StatelessWidget {
             // Текст
             Expanded(
               child: Text(
-                "${flashcard.question} - ${flashcard.weight}",
+                "${flashcard.question} - ${flashcard.weight} -  ${flashcard.id}",
                 style: TextStyle(fontSize: 17),
                 textAlign: TextAlign.center,
               ),

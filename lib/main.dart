@@ -9,7 +9,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => FlashcardProvider()..populateFlashcards(8)),
+        ChangeNotifierProvider(create: (_) => FlashcardProvider()..populateFlashcards()),
       ],
       child: const MyApp(),
     ),

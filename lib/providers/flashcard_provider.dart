@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mindflasher/tech_data/words_translations.dart';
 import '../models/flashcard.dart';
 
 class FlashcardProvider with ChangeNotifier {
@@ -7,18 +8,24 @@ class FlashcardProvider with ChangeNotifier {
 
   List<Flashcard> get flashcards => _flashcards;
 
-  void populateFlashcards(int count) {
-    for (int i = 0; i < count; i++) {
-      _flashcards.add(Flashcard(
-        id: i.toString(),
-        question: 'Question $i',
-        answer: 'Answer $i',
-      ));
+  void populateFlashcards() {
+    _flashcards.clear(); // Очистим массив перед заполнением
+    int counter = 0; // Инициализируем счетчик
+
+    for (var translation in WordsTranslations.translations) {
+      translation.forEach((question, answer) {
+        _flashcards.add(Flashcard(
+          id: counter, // Используем счетчик как id
+          question: question,
+          answer: answer,
+        ));
+        counter++; // Увеличиваем счетчик после каждой итерации
+      });
     }
     notifyListeners();
   }
 
-  void updateCardWeight(String id, int increment) {
+  void updateCardWeight(int id, int increment) {
     final index = _flashcards.indexWhere((card) => card.id == id);
     if (index != -1) {
       final flashcard = _flashcards[index];
@@ -45,7 +52,14 @@ class FlashcardProvider with ChangeNotifier {
   }
 
   void _sortFlashcardsByWeight() {
-    _flashcards.sort((a, b) => a.weight.compareTo(b.weight));
+    _flashcards.sort((a, b) {
+      int weightComparison = a.weight.compareTo(b.weight);
+      if (weightComparison != 0) {
+        return weightComparison;
+      } else {
+        return a.id.compareTo(b.id); // Сортировка по id если веса совпадают
+      }
+    });
   }
 
   Widget _buildRemovedCardItem(Flashcard card, Animation<double> animation) {

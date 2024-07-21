@@ -1,5 +1,5 @@
 class Flashcard {
-  final String id;
+  final int id;
   final String question;
   final String answer;
   final int weight; // вес карточки
@@ -12,7 +12,7 @@ class Flashcard {
   });
 
   Flashcard copyWith({
-    String? id,
+    int? id,
     String? question,
     String? answer,
     int? weight,
