@@ -4,7 +4,7 @@ import '../../providers/flashcard_provider.dart';
 import '../../models/flashcard.dart';
 import 'swipeable_card.dart';
 
-class FlashcardListScreen extends StatelessWidget {
+class FlashcardIndexScreen extends StatelessWidget {
   Widget _buildCardItem(BuildContext context, Flashcard card, Animation<double> animation) {
     return SizeTransition(
       sizeFactor: animation,
