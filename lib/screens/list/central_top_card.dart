@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mindflasher/models/flashcard.dart';
 import 'package:mindflasher/providers/flashcard_provider.dart';
-
-
+import 'package:mindflasher/tech_data/weight_delays_enum.dart';
 import 'package:provider/provider.dart';
 
 class CentralTopCard extends StatelessWidget {
@@ -27,7 +26,7 @@ class CentralTopCard extends StatelessWidget {
                   width: 40, // Ширина кнопки
                   child: ElevatedButton(
                     onPressed: () {
-                      Provider.of<FlashcardProvider>(context, listen: false).updateCardWeight(flashcard.id, 100);
+                      Provider.of<FlashcardProvider>(context, listen: false).updateCardWeight(flashcard.id, WeightDelaysEnum.goodLongDelay);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green, // Задаем цвет фона кнопки

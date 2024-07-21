@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mindflasher/screens/list/central_top_card.dart';
+import 'package:mindflasher/screens/list/left_swipe_card.dart';
+import 'package:mindflasher/screens/list/right_answer_card.dart';
+import 'package:mindflasher/tech_data/weight_delays_enum.dart';
 import 'package:mindflasher/tech_data/words_translations.dart';
 import '../models/flashcard.dart';
 
@@ -25,26 +29,26 @@ class FlashcardProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateCardWeight(int id, int increment) {
+  void updateCardWeight(int id,  WeightDelaysEnum weightDelayEnum) {
     final index = _flashcards.indexWhere((card) => card.id == id);
     if (index != -1) {
       final flashcard = _flashcards[index];
-      final updatedCard = flashcard.copyWith(weight: flashcard.weight + increment);
+      final updatedCard = flashcard.copyWith(weight: flashcard.weight + weightDelayEnum.value);
 
       listKey.currentState?.removeItem(
         index,
-            (context, animation) => _buildRemovedCardItem(flashcard, animation),
-        duration: const Duration(milliseconds: 300),
+            (context, animation) => _buildRemovedCardItem(flashcard, animation, weightDelayEnum),
+        duration: const Duration(milliseconds: 150),
       );
 
       _flashcards.removeAt(index);
-      Future.delayed(const Duration(milliseconds: 300), () {
+      Future.delayed(const Duration(milliseconds: 10), () {
         _flashcards.add(updatedCard);
         _sortFlashcardsByWeight();
         final newIndex = _flashcards.indexOf(updatedCard);
         listKey.currentState?.insertItem(
           newIndex,
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 200),
         );
         notifyListeners();
       });
@@ -62,16 +66,39 @@ class FlashcardProvider with ChangeNotifier {
     });
   }
 
-  Widget _buildRemovedCardItem(Flashcard card, Animation<double> animation) {
-    return SizeTransition(
-      sizeFactor: animation,
-      child: Card(
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-        child: ListTile(
-          title: Text(card.question),
-          subtitle: Text('Weight: ${card.weight}'),
+  Widget _buildRemovedCardItem(Flashcard card, Animation<double> animation, WeightDelaysEnum weightDelayEnum) {
+    if (weightDelayEnum == WeightDelaysEnum.noDelay) {
+      return SizeTransition(
+        sizeFactor: animation,
+        child: LeftSwipeCard(
+          flashcard: card,
+          stopThreshold: 0.4, // DRY !!!!
         ),
-      ),
-    );
+      );
+    } else if (weightDelayEnum == WeightDelaysEnum.badSmallDelay || weightDelayEnum == WeightDelaysEnum.normMedDelay) {
+      return SizeTransition(
+        sizeFactor: animation,
+        child: RightAnswerCard(
+          flashcard: card,
+          stopThreshold: 0.9, // Пример значения для другого экрана
+        ),
+      );
+    } else if (weightDelayEnum == WeightDelaysEnum.goodLongDelay) {
+      return SizeTransition(
+        sizeFactor: animation,
+        child: CentralTopCard(
+          flashcard: card,
+
+        ),
+      );
+    } else {
+      return SizeTransition(
+        sizeFactor: animation,
+        child: CentralTopCard(
+          flashcard: card,
+        ),
+      );
+    }
   }
+
 }

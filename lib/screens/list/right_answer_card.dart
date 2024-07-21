@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mindflasher/models/flashcard.dart';
 import 'package:mindflasher/providers/flashcard_provider.dart';
+import 'package:mindflasher/tech_data/weight_delays_enum.dart';
 import 'package:provider/provider.dart';
 
 class RightAnswerCard extends StatelessWidget {
@@ -15,10 +16,10 @@ class RightAnswerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned.fill(
+    return Align(
+      alignment: Alignment.centerRight,
       child: FractionallySizedBox(
         widthFactor: stopThreshold,
-        alignment: Alignment.centerRight,
         child: Card(
           surfaceTintColor: Colors.orangeAccent.withOpacity(0.05),
           child: Container(
@@ -34,7 +35,7 @@ class RightAnswerCard extends StatelessWidget {
                       width: 40,
                       child: ElevatedButton(
                         onPressed: () {
-                          Provider.of<FlashcardProvider>(context, listen: false).updateCardWeight(flashcard.id, 1);
+                          Provider.of<FlashcardProvider>(context, listen: false).updateCardWeight(flashcard.id, WeightDelaysEnum.badSmallDelay);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.redAccent,
@@ -69,7 +70,7 @@ class RightAnswerCard extends StatelessWidget {
                       width: 40,
                       child: ElevatedButton(
                         onPressed: () {
-                          Provider.of<FlashcardProvider>(context, listen: false).updateCardWeight(flashcard.id, 10);
+                          Provider.of<FlashcardProvider>(context, listen: false).updateCardWeight(flashcard.id, WeightDelaysEnum.normMedDelay);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.yellow,

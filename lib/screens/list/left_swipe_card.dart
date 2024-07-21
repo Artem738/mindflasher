@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mindflasher/models/flashcard.dart';
 import 'package:mindflasher/providers/flashcard_provider.dart';
+import 'package:mindflasher/tech_data/weight_delays_enum.dart';
 import 'package:provider/provider.dart';
 
 class LeftSwipeCard extends StatelessWidget {
   final Flashcard flashcard;
-
   final double stopThreshold;
 
   const LeftSwipeCard({
@@ -16,24 +16,30 @@ class LeftSwipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned.fill(
+    return Align(
+      alignment: Alignment.centerLeft,
       child: FractionallySizedBox(
         widthFactor: stopThreshold,
-        alignment: Alignment.centerLeft,
         child: Card(
           surfaceTintColor: Colors.blueAccent.withOpacity(0.05),
           child: Container(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20.0, right: 10.0),
-                child: ElevatedButton(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
                   onPressed: () {
-                    Provider.of<FlashcardProvider>(context, listen: false).updateCardWeight(flashcard.id, 0);
+                    Provider.of<FlashcardProvider>(context, listen: false).updateCardWeight(flashcard.id, WeightDelaysEnum.noDelay);
                   },
-                  child: Text('Удалить', style: TextStyle(color: Colors.black)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: Center(
+                    child: Icon(Icons.delete, color: Colors.white),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
