@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:mindflasher/models/flashcard.dart';
+import 'package:mindflasher/providers/flashcard_provider.dart';
+
+
+import 'package:provider/provider.dart';
 
 class CentralTopCard extends StatelessWidget {
   final Flashcard flashcard;
-  final VoidCallback onRemove;
 
-  const CentralTopCard({Key? key, required this.flashcard, required this.onRemove}) : super(key: key);
+
+  const CentralTopCard({Key? key, required this.flashcard}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +27,7 @@ class CentralTopCard extends StatelessWidget {
                   width: 40, // Ширина кнопки
                   child: ElevatedButton(
                     onPressed: () {
-                      onRemove();
+                      Provider.of<FlashcardProvider>(context, listen: false).updateCardWeight(flashcard.id, 100);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green, // Задаем цвет фона кнопки
@@ -41,7 +45,7 @@ class CentralTopCard extends StatelessWidget {
             // Текст
             Expanded(
               child: Text(
-                flashcard.question,
+                "${flashcard.question} - ${flashcard.weight}",
                 style: TextStyle(fontSize: 17),
                 textAlign: TextAlign.center,
               ),

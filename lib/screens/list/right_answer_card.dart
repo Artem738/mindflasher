@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:mindflasher/models/flashcard.dart';
+import 'package:mindflasher/providers/flashcard_provider.dart';
+import 'package:provider/provider.dart';
 
 class RightAnswerCard extends StatelessWidget {
-  final VoidCallback onRemove;
   final Flashcard flashcard;
   final double stopThreshold;
 
   const RightAnswerCard({
     Key? key,
     required this.flashcard,
-    required this.onRemove,
     required this.stopThreshold,
   }) : super(key: key);
 
@@ -34,7 +34,7 @@ class RightAnswerCard extends StatelessWidget {
                       width: 40,
                       child: ElevatedButton(
                         onPressed: () {
-                          onRemove();
+                          Provider.of<FlashcardProvider>(context, listen: false).updateCardWeight(flashcard.id, 1);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.redAccent,
@@ -69,7 +69,7 @@ class RightAnswerCard extends StatelessWidget {
                       width: 40,
                       child: ElevatedButton(
                         onPressed: () {
-                          onRemove();
+                          Provider.of<FlashcardProvider>(context, listen: false).updateCardWeight(flashcard.id, 10);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.yellow,

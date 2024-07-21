@@ -9,7 +9,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => FlashcardProvider()..populateFlashcards(10)),
+        ChangeNotifierProvider(create: (_) => FlashcardProvider()..populateFlashcards(8)),
       ],
       child: const MyApp(),
     ),
@@ -25,7 +25,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: EnvConfig.showDebugUpRightBanner,
       title: 'Flashcard App',
       home: FlashcardListScreen(),
-
     );
   }
 }
