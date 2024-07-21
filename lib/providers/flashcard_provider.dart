@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:mindflasher/screens/list/central_top_card.dart';
 import 'package:mindflasher/screens/list/left_swipe_card.dart';
@@ -27,6 +30,28 @@ class FlashcardProvider with ChangeNotifier {
       });
     }
     notifyListeners();
+  }
+
+  Future<void> fetchAndPopulateFlashcards(int deckId) async {
+    String apiUrl = 'http://176.37.2.137/api/decks/$deckId/flashcards';
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      _flashcards.clear(); // Очистим массив перед заполнением
+
+      for (var item in data) {
+        _flashcards.add(Flashcard(
+          id: item['id'],
+          question: item['question'],
+          answer: item['answer'],
+          weight: item['weight'] ?? 0, // Если weight отсутствует, используем 0
+        ));
+      }
+      notifyListeners();
+    } else {
+      throw Exception('Failed to load flashcards');
+    }
   }
 
   void updateCardWeight(int id,  WeightDelaysEnum weightDelayEnum) {

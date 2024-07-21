@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mindflasher/providers/deck_provider.dart';
+import 'package:mindflasher/screens/list/flashcard_index_screen.dart';
 import 'package:provider/provider.dart';
 
 class DeckIndexScreen extends StatelessWidget {
@@ -21,10 +22,17 @@ class DeckIndexScreen extends StatelessWidget {
           } else {
             return Consumer<DeckProvider>(
               builder: (ctx, deckProvider, child) => ListView.builder(
-                itemCount: deckProvider.deck.length,
+                itemCount: deckProvider.decks.length,
                 itemBuilder: (ctx, i) => ListTile(
-                  title: Text(deckProvider.deck[i]['name']),
-                  subtitle: Text(deckProvider.deck[i]['description']),
+                  title: Text(deckProvider.decks[i].name),
+                  subtitle: Text(deckProvider.decks[i].description),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => FlashcardIndexScreen(deck: deckProvider.decks[i]),
+                      ),
+                    );
+                  },
                 ),
               ),
             );
