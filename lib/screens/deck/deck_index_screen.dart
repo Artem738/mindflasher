@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mindflasher/providers/deck_provider.dart';
+import 'package:mindflasher/providers/user_provider.dart';
 import 'package:mindflasher/screens/list/flashcard_index_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +12,12 @@ class DeckIndexScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Deck'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: Provider.of<UserProvider>(navigatorKey.currentContext!, listen: false).logout,
+          ),
+        ],
       ),
       body: FutureBuilder(
         future: Provider.of<DeckProvider>(context, listen: false).fetchDeck(),

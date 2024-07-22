@@ -7,6 +7,7 @@ import 'package:mindflasher/screens/user/register_screen.dart';
 import 'package:provider/provider.dart';
 import 'env_config.dart';
 import 'providers/flashcard_provider.dart';
+import 'package:mindflasher/screens/splash_screen.dart';
 
 void main() {
   runApp(
@@ -27,13 +28,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    bool isLoggedIn = userProvider.token != null && userProvider.user != null;
 
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: EnvConfig.showDebugUpRightBanner,
       title: 'Flashcard App',
-      home: isLoggedIn ? DeckIndexScreen() : LoginScreen(),
+      home: userProvider.isLoading
+          ? SplashScreen()
+          : (userProvider.token != null && userProvider.user != null
+          ? DeckIndexScreen()
+          : LoginScreen()),
       routes: {
         '/deck': (context) => DeckIndexScreen(),
         '/register': (context) => RegisterScreen(),

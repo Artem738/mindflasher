@@ -1,19 +1,65 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mindflasher/system/validation_exception.dart';
 import '../models/user.dart';
 import '../env_config.dart';
-
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class UserProvider with ChangeNotifier {
   User? _user;
   String? _token;
+  bool _isLoading = true;
 
   User? get user => _user;
   String? get token => _token;
+  bool get isLoading => _isLoading;
+
+  UserProvider() {
+    _loadToken();
+  }
+
+  Future<void> _loadToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token');
+    if (_token != null) {
+      await _loadUser();
+    }
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> _saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('token', token);
+  }
+
+  Future<void> _removeToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('token');
+  }
+
+  Future<void> _loadUser() async {
+    final userResponse = await http.get(
+      Uri.parse('${EnvConfig.mainApiUrl}api/user'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $_token',
+      },
+    );
+
+    if (userResponse.statusCode == 200) {
+      _user = User.fromJson(json.decode(userResponse.body));
+    } else {
+      _token = null;
+      _user = null;
+      await _removeToken();
+    }
+
+    notifyListeners();
+  }
 
   Future<void> register(String name, String username, String email, String password, String passwordConfirmation) async {
     final url = Uri.parse('${EnvConfig.mainApiUrl}api/register');
@@ -57,25 +103,9 @@ class UserProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         _token = responseData['access_token'];
+        await _saveToken(_token!);
 
-        // Получение данных пользователя
-        final userResponse = await http.get(
-          Uri.parse('${EnvConfig.mainApiUrl}api/user'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $_token',
-          },
-        );
-
-        if (userResponse.statusCode == 200) {
-          print(userResponse.body);
-
-          _user = User.fromJson(json.decode(userResponse.body));
-        } else {
-          throw Exception('Failed to fetch user data');
-        }
-
-        notifyListeners();
+        await _loadUser();
       } else if (response.statusCode == 422) {
         final errors = json.decode(response.body)['errors'];
         throw ValidationException(errors);
@@ -90,9 +120,10 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  void logout() {
+  void logout() async {
     _token = null;
     _user = null;
+    await _removeToken();
     notifyListeners();
   }
 }
