@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: EnvConfig.showDebugUpRightBanner,
       title: 'Flashcard App',
       home: LoginScreen(),

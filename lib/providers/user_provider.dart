@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mindflasher/system/validation_exeption.dart';
+import 'package:mindflasher/system/validation_exception.dart';
 import '../models/user.dart';
-import '../env_config.dart';// Импорт ValidationException
+import '../env_config.dart';
+
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class UserProvider with ChangeNotifier {
   User? _user;
@@ -14,7 +17,6 @@ class UserProvider with ChangeNotifier {
 
   Future<void> register(String name, String username, String email, String password, String passwordConfirmation) async {
     final url = Uri.parse('${EnvConfig.mainApiUrl}api/register');
-    print(url);
 
     try {
       final response = await http.post(
@@ -45,8 +47,6 @@ class UserProvider with ChangeNotifier {
 
   Future<void> login(String email, String password) async {
     final url = Uri.parse('${EnvConfig.mainApiUrl}api/login');
-    print(url);
-
     try {
       final response = await http.post(
         url,

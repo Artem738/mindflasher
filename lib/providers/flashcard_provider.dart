@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
+import 'package:mindflasher/env_config.dart';
 import 'package:mindflasher/screens/list/central_top_card.dart';
 import 'package:mindflasher/screens/list/left_swipe_card.dart';
 import 'package:mindflasher/screens/list/right_answer_card.dart';
 import 'package:mindflasher/tech_data/weight_delays_enum.dart';
 import 'package:mindflasher/tech_data/words_translations.dart';
 import '../models/flashcard.dart';
+import 'package:provider/provider.dart'; // Импортируем Provider для получения токена
+import 'package:mindflasher/providers/user_provider.dart'; // Импортируем UserProvider
 
 class FlashcardProvider with ChangeNotifier {
   final List<Flashcard> _flashcards = [];
@@ -33,8 +35,20 @@ class FlashcardProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndPopulateFlashcards(int deckId) async {
-    String apiUrl = 'http://176.37.2.137/api/decks/$deckId/flashcards';
-    final response = await http.get(Uri.parse(apiUrl));
+    // Получение токена из UserProvider
+    final token = Provider.of<UserProvider>(navigatorKey.currentContext!, listen: false).token;
+    if (token == null) {
+      throw Exception('User not authenticated');
+    }
+
+    final apiUrl = '${EnvConfig.mainApiUrl}api/decks/$deckId/flashcards';
+    final response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
@@ -46,15 +60,18 @@ class FlashcardProvider with ChangeNotifier {
           question: item['question'],
           answer: item['answer'],
           weight: item['weight'] ?? 0, // Если weight отсутствует, используем 0
+          deckId: item['deck_id'], // Добавляем поле deckId
+          lastReviewedAt: item['last_reviewed_at'], // Добавляем поле lastReviewedAt
         ));
       }
+      _sortFlashcardsByWeight();
       notifyListeners();
     } else {
       throw Exception('Failed to load flashcards');
     }
   }
 
-  void updateCardWeight(int id,  WeightDelaysEnum weightDelayEnum) {
+  Future<void> updateCardWeight(int id, WeightDelaysEnum weightDelayEnum) async {
     final index = _flashcards.indexWhere((card) => card.id == id);
     if (index != -1) {
       final flashcard = _flashcards[index];
@@ -77,6 +94,31 @@ class FlashcardProvider with ChangeNotifier {
         );
         notifyListeners();
       });
+
+      // Обновление веса карточки на сервере
+      await updateCardWeightOnServer(id, updatedCard.weight);
+    }
+  }
+
+  Future<void> updateCardWeightOnServer(int id, int weight) async {
+    // Получение токена из UserProvider
+    final token = Provider.of<UserProvider>(navigatorKey.currentContext!, listen: false).token;
+    if (token == null) {
+      throw Exception('User not authenticated');
+    }
+
+    final url = Uri.parse('${EnvConfig.mainApiUrl}api/flashcards/$id/progress/weight');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({'weight': weight}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update weight on server');
     }
   }
 
@@ -113,7 +155,6 @@ class FlashcardProvider with ChangeNotifier {
         sizeFactor: animation,
         child: CentralTopCard(
           flashcard: card,
-
         ),
       );
     } else {
@@ -125,5 +166,4 @@ class FlashcardProvider with ChangeNotifier {
       );
     }
   }
-
 }

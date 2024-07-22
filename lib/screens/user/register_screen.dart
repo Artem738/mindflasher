@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mindflasher/providers/user_provider.dart';
-import 'package:mindflasher/system/validation_exeption.dart';
+import 'package:mindflasher/system/validation_exception.dart';
 import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
