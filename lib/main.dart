@@ -26,11 +26,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    bool isLoggedIn = userProvider.token != null && userProvider.user != null;
+
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: EnvConfig.showDebugUpRightBanner,
       title: 'Flashcard App',
-      home: LoginScreen(),
+      home: isLoggedIn ? DeckIndexScreen() : LoginScreen(),
       routes: {
         '/deck': (context) => DeckIndexScreen(),
         '/register': (context) => RegisterScreen(),

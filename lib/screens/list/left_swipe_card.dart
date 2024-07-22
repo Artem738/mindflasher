@@ -24,9 +24,16 @@ class LeftSwipeCard extends StatelessWidget {
           surfaceTintColor: Colors.blueAccent.withOpacity(0.05),
           child: Container(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Column(
+                  children: [
+                    Text("ID: ${flashcard.id} "),
+                    Text("Weight: ${flashcard.weight} "),
+                  ],
+                ),
+
                 ElevatedButton(
                   onPressed: () {
                     Provider.of<FlashcardProvider>(context, listen: false).updateCardWeight(flashcard.id, WeightDelaysEnum.noDelay);

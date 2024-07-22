@@ -10,7 +10,7 @@ class DeckIndexScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Subjects'),
+        title: Text('Deck'),
       ),
       body: FutureBuilder(
         future: Provider.of<DeckProvider>(context, listen: false).fetchDeck(),

@@ -30,7 +30,6 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           print(error.toString());
           ScaffoldMessenger.of(context).showSnackBar(
-
             SnackBar(content: Text(error.toString())),
           );
         }
@@ -63,9 +62,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 obscureText: true,
               ),
+              SizedBox(height: 15),
               ElevatedButton(
                 onPressed: _login,
                 child: Text('Login'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/register');
+                },
+                child: Text('Don\'t have an account? Register'),
               ),
             ],
           ),
